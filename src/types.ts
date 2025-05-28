@@ -150,6 +150,12 @@ export type Props = {
    * @default expandOnContentDrag === false
    */
   expandOnContentDrag?: boolean,
+  /**
+   * Outer scroll container. If specified, the bottom shield can be closed by gesture only when
+   * this container is scrolled to the top (scrollTop <= 0). If not specified, the inner
+   * bottom shield container is used.
+   */
+  externalScrollContainer?: HTMLElement | null
 } & Omit<React.PropsWithoutRef<JSX.IntrinsicElements['div']>, 'children'>
 
 export interface RefHandles {
