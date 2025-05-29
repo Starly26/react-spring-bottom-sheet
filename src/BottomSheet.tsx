@@ -449,10 +449,14 @@ export const BottomSheet = React.forwardRef<
   )
 
   useEffect(() => {
-    const elem = scrollRef.current
+    const elem = externalScrollContainer || scrollRef.current
+
+    if (elem) {
+      elem.setAttribute('data-body-scroll-lock-ignore', '')
+    }
 
     const preventScrolling = (e) => {
-      if (preventScrollingRef.current) {
+      if (preventScrollingRef.current && elem.scrollTop <= 0) {
         e.preventDefault()
       }
     }
@@ -469,16 +473,19 @@ export const BottomSheet = React.forwardRef<
     }
 
     if (expandOnContentDrag) {
-      elem.addEventListener('scroll', preventScrolling)
-      elem.addEventListener('touchmove', preventScrolling)
-      elem.addEventListener('touchstart', preventSafariOverscroll)
+      elem.addEventListener('touchmove', preventScrolling, { passive: false })
+      elem.addEventListener('touchstart', preventSafariOverscroll, {
+        passive: false,
+      })
     }
     return () => {
-      elem.removeEventListener('scroll', preventScrolling)
+      if (elem) {
+        elem.removeAttribute('data-body-scroll-lock-ignore')
+      }
       elem.removeEventListener('touchmove', preventScrolling)
       elem.removeEventListener('touchstart', preventSafariOverscroll)
     }
-  }, [expandOnContentDrag, scrollRef])
+  }, [expandOnContentDrag, scrollRef, externalScrollContainer])
 
   const handleDrag = ({
     args: [{ closeOnTap = false, isContentDragging = false } = {}] = [],
